@@ -1,0 +1,35 @@
+language: node_js
+git:
+  depth: false
+
+dist: trusty
+sudo: required
+
+branches:
+  only:
+    - master
+
+matrix:
+  include:
+    - node_js: 8
+      env: TEST_SUITE=unit
+      install:
+        - npm i
+        - npm i -g codecov
+      script:
+        - npm run test:unit-ci
+      after_success:
+        - codecov
+
+    - node_js: 8
+      env: TEST_SUITE=lint
+      install: npm i
+      script: npm run lint
+
+    - node_js: 8
+      env: TEST_SUITE=screenshots
+      install: npm i
+      script:
+        - ./test/screenshot/start.sh
+        - sleep 190s
+        - npm run test:image-diff
